@@ -549,6 +549,20 @@ self["C3_Shaders"] = {};
 
 "use strict";C3.Plugins.Text.Exps={Text(){return this._text},PlainText(){return this._enableBBcode?C3.BBString.StripAnyTags(this._text):this._text},FaceName(){return this._faceName},FaceSize(){return this._ptSize},TextWidth(){return this._UpdateTextSize(),this._webglText.GetTextWidth()},TextHeight(){return this._UpdateTextSize(),this._webglText.GetTextHeight()},LineHeight(){return this._lineHeightOffset}};
 
+"use strict";C3.Plugins.NinePatch=class extends C3.SDKPluginBase{constructor(a){super(a)}Release(){super.Release()}};
+
+"use strict";C3.Plugins.NinePatch.Type=class extends C3.SDKTypeBase{constructor(a){super(a),this._textureSet=null,this._drawable=null}Release(){this.ReleaseTextures(),super.Release()}OnCreate(){this.GetImageInfo().LoadAsset(this._runtime)}async LoadTextures(){const a=this.GetImageInfo();this._drawable=await a.ExtractImageToCanvas()}CreatePatch(a,b,c,d){this._textureSet||!this._drawable||(this._textureSet=new NinePatchTextureSet(this),this._textureSet.CreateTextures(this._drawable,a,b,c,d))}ReleaseTextures(){this._textureSet&&(this._textureSet.Release(),this._textureSet=null)}GetTextureSet(){return this._textureSet}};
+
+"use strict";{const a=C3.New(C3.Rect),b=C3.New(C3.Quad);C3.Plugins.NinePatch.Instance=class extends C3.SDKWorldInstanceBase{constructor(a,b){super(a),this._leftMargin=16,this._rightMargin=16,this._topMargin=16,this._bottomMargin=16,this._edges=1,this._fill=1,this._isSeamless=!0,b&&(this._leftMargin=b[0],this._rightMargin=b[1],this._topMargin=b[2],this._bottomMargin=b[3],this._edges=b[4],this._fill=b[5],this._isSeamless=!!b[8],this.GetWorldInfo().SetVisible(!!b[6])),this._sdkType.CreatePatch(this._leftMargin,this._rightMargin,this._topMargin,this._bottomMargin)}Release(){super.Release()}Draw(a){let b=this._sdkType.GetTextureSet();if(b||(this._sdkType.CreatePatch(this._leftMargin,this._rightMargin,this._topMargin,this._bottomMargin),b=this._sdkType.GetTextureSet(),!!b)){const c=this.GetWorldInfo(),d=this._leftMargin,e=this._rightMargin,f=this._topMargin,g=this._bottomMargin,h=b.GetImageWidth(),i=b.GetImageHeight(),j=h-e,k=i-g,l=c.GetBoundingQuad(),m=l.getTlx(),n=l.getTly(),o=c.GetWidth(),p=c.GetHeight(),q=this._isSeamless?1:0,r=this._edges,s=this._fill;if(0<d&&0<f&&this._DrawPatch(a,b.GetTexture(),0,0,d+q,f+q,m,n,d+q,f+q),0<e&&0<f&&this._DrawPatch(a,b.GetTexture(),j-q,0,e+q,f+q,m+o-e-q,n,e+q,f+q),0<e&&0<g&&this._DrawPatch(a,b.GetTexture(),j-q,k-q,e+q,g+q,m+o-e-q,n+p-g-q,e+q,g+q),0<d&&0<g&&this._DrawPatch(a,b.GetTexture(),0,k-q,d+q,g+q,m,n+p-g-q,d+q,g+q),0===r){const c=2===s?0:q;0<d&&k>f&&this._TilePatch(a,b.GetLeftTexture(),m,n+f,d+c,p-f-g,0,0),0<e&&k>f&&this._TilePatch(a,b.GetRightTexture(),m+o-e-c,n+f,e+c,p-f-g,c,0),0<f&&j>d&&this._TilePatch(a,b.GetTopTexture(),m+d,n,o-d-e,f+c,0,0),0<g&&j>d&&this._TilePatch(a,b.GetBottomTexture(),m+d,n+p-g-c,o-d-e,g+c,0,c)}else 1===r&&(0<d&&k>f&&this._DrawPatch(a,b.GetTexture(),0,f,d,k-f,m,n+f,d,p-f-g),0<e&&k>f&&this._DrawPatch(a,b.GetTexture(),j,f,e,k-f,m+o-e,n+f,e,p-f-g),0<f&&j>d&&this._DrawPatch(a,b.GetTexture(),d,0,j-d,f,m+d,n,o-d-e,f),0<g&&j>d&&this._DrawPatch(a,b.GetTexture(),d,k,j-d,g,m+d,n+p-g,o-d-e,g));k>f&&j>d&&(0===s?this._TilePatch(a,b.GetFillTexture(),m+d,n+f,o-d-e,p-f-g,0,0):1===s&&this._DrawPatch(a,b.GetTexture(),d,f,j-d,k-f,m+d,n+f,o-d-e,p-f-g))}}_DrawPatch(c,d,e,f,g,h,i,j,k,l){const m=d.GetWidth(),n=d.GetHeight();c.SetTexture(d);const o=this.GetWorldInfo(),p=o.GetBoundingQuad(),q=p.getTlx(),r=p.getTly();a.set(i,j,i+k,j+l),a.offset(-q,-r),b.setFromRotatedRect(a,o.GetAngle()),b.offset(q,r),a.set(e/m,f/n,(e+g)/m,(f+h)/n),c.Quad3(b,a)}_TilePatch(c,d,e,f,g,h,i,j){const k=d.GetWidth(),l=d.GetHeight();c.SetTexture(d);const m=this.GetWorldInfo(),n=m.GetBoundingQuad(),o=n.getTlx(),p=n.getTly();a.set(e,f,e+g,f+h),a.offset(-o,-p),b.setFromRotatedRect(a,m.GetAngle()),b.offset(o,p),a.set(-i/k,-j/l,(g-i)/k,(h-j)/l),c.Quad3(b,a)}GetCurrentImageInfo(){this._objectClass.GetImageInfo()}GetPropertyValueByIndex(){}SetPropertyValueByIndex(){}}}
+
+"use strict";C3.Plugins.NinePatch.Cnds={};
+
+"use strict";C3.Plugins.NinePatch.Acts={SetEffect(a){this.GetWorldInfo().SetBlendMode(a),this._runtime.UpdateRender()}};
+
+"use strict";C3.Plugins.NinePatch.Exps={};
+
+"use strict";{function a(a){const b=C3.CreateCanvas(a.width,a.height),c=b.getContext("2d");return c.drawImage(a,0,0),b}self.NinePatchTextureSet=class{constructor(a){this._sdkType=a,this._runtime=this._sdkType.GetRuntime(),this._texture=null,this._fillTexture=null,this._leftTexture=null,this._rightTexture=null,this._topTexture=null,this._bottomTexture=null,this._imageWidth=0,this._imageHeight=0,this._renderer=this._runtime.GetWebGLRenderer(),this._isLoading=!1,this._wasReleased=!1}Release(){this._renderer.IsContextLost()||(this._renderer.DeleteTexture(this._texture),this._renderer.DeleteTexture(this._fillTexture),this._renderer.DeleteTexture(this._leftTexture),this._renderer.DeleteTexture(this._rightTexture),this._renderer.DeleteTexture(this._topTexture),this._renderer.DeleteTexture(this._bottomTexture)),this._texture=null,this._fillTexture=null,this._leftTexture=null,this._rightTexture=null,this._topTexture=null,this._bottomTexture=null,this._sdkType=null,this._renderer=null,this._wasReleased=!0}WasReleased(){return this._wasReleased}CreateTextures(a,b,c,d,e){this._SliceImage(a,b,c,d,e)}HasCreatedTextures(){return!!this._texture}_SliceImage(b,c,d,e,f){if(!this._wasReleased){const g=b.width,h=b.height;this._imageWidth=g,this._imageHeight=h;const i=g-d,j=h-f,k=this._runtime.GetSampling();this._texture=this._renderer.CreateStaticTexture(a(b),{isTiled:!1,sampling:k}),i>c&&j>e&&(this._fillTexture=this._renderer.CreateStaticTexture(this._SliceSubImage(a(b),c,e,i,j),{isTiled:!0,sampling:k})),0<c&&j>e&&(this._leftTexture=this._renderer.CreateStaticTexture(this._SliceSubImage(a(b),0,e,c,j),{isTiled:!0,tileType:"repeat-y",sampling:k})),0<d&&j>e&&(this._rightTexture=this._renderer.CreateStaticTexture(this._SliceSubImage(a(b),i,e,g,j),{isTiled:!0,tileType:"repeat-y",sampling:k})),0<e&&i>c&&(this._topTexture=this._renderer.CreateStaticTexture(this._SliceSubImage(a(b),c,0,i,e),{isTiled:!0,tileType:"repeat-x",sampling:k})),0<f&&i>c&&(this._bottomTexture=this._renderer.CreateStaticTexture(this._SliceSubImage(a(b),c,j,i,h),{isTiled:!0,tileType:"repeat-x",sampling:k}))}}_SliceSubImage(a,b,c,d,e){const f=d-b,g=e-c,h=C3.CreateCanvas(f,g),i=h.getContext("2d");return i.drawImage(a,b,c,f,g,0,0,f,g),h}GetImageWidth(){return this._imageWidth}GetImageHeight(){return this._imageHeight}GetTexture(){return this._texture}GetFillTexture(){return this._fillTexture}GetLeftTexture(){return this._leftTexture}GetRightTexture(){return this._rightTexture}GetTopTexture(){return this._topTexture}GetBottomTexture(){return this._bottomTexture}}}
+
 "use strict";C3.Behaviors.solid=class extends C3.SDKBehaviorBase{constructor(a){super(a)}Release(){super.Release()}};
 
 "use strict";C3.Behaviors.solid.Type=class extends C3.SDKBehaviorTypeBase{constructor(a){super(a)}Release(){super.Release()}OnCreate(){}};
@@ -573,18 +587,6 @@ self["C3_Shaders"] = {};
 
 "use strict";C3.Behaviors.Platform.Exps={Speed(){return this._GetSpeed()},MaxSpeed(){return this._GetMaxSpeed()},Acceleration(){return this._GetAcceleration()},Deceleration(){return this._GetDeceleration()},JumpStrength(){return this._GetJumpStrength()},Gravity(){return this._GetGravity()},GravityAngle(){return C3.toDegrees(this._GetGravityAngle())},MaxFallSpeed(){return this._GetMaxFallSpeed()},MovingAngle(){return C3.toDegrees(this._GetMovingAngle())},VectorX(){return this._GetVectorX()},VectorY(){return this._GetVectorY()},JumpSustain(){return 1e3*this._GetJumpSustain()}};
 
-"use strict";C3.Behaviors.LOS=class extends C3.SDKBehaviorBase{constructor(a){super(a)}Release(){super.Release()}};
-
-"use strict";C3.Behaviors.LOS.Type=class extends C3.SDKBehaviorTypeBase{constructor(a){super(a),this._obstacleTypes=[]}Release(){C3.clearArray(this._obstacleTypes),super.Release()}OnCreate(){}GetObstacleTypes(){return this._obstacleTypes}FindLOSBehavior(a){const b=this.GetBehaviorType();for(const c of a.GetBehaviorInstances())if(c.GetBehaviorType()===b)return c.GetSdkInstance();return null}};
-
-"use strict";{const a=[];C3.Behaviors.LOS.Instance=class extends C3.SDKBehaviorInstanceBase{constructor(a,b){super(a),this._obstacleMode=0,this._range=1e4,this._cone=C3.toRadians(360),this._useCollisionCells=!0,this._ray=new C3.Ray,b&&(this._obstacleMode=b[0],this._range=b[1],this._cone=C3.toRadians(b[2]),this._useCollisionCells=b[3])}Release(){super.Release()}SaveToJson(){return{"r":this._range,"c":this._cone,"om":this._obstacleMode,"ucc":this._useCollisionCells,"t":this.GetSdkType().GetObstacleTypes().map((a)=>a.GetSID())}}LoadFromJson(a){this._range=a["r"],this._cone=a["c"],this._obstacleMode=a["om"]||0,this._useCollisionCells=!!a["ucc"];const b=this.GetSdkType().GetObstacleTypes();C3.clearArray(b);for(const c of a["t"]){const a=this._runtime.GetObjectClassBySID(c);a&&b.push(a)}}HasLOSToInstance(a){const b=a.GetUID(),c=a.GetWorldInfo(),d=this.HasLOSTo(c.GetX(),c.GetY());return d||this._ray.hitUid===b}HasLOSTo(a,b){const c=this.GetWorldInfo();let d=c.GetAngle();return 0>c.GetWidth()&&(d+=Math.PI),this.HasLOSBetweenPositions(c.GetX(),c.GetY(),d,a,b)}HasLOSBetweenPositions(b,c,d,e,f){const g=this._range;if(C3.distanceSquared(b,c,e,f)>g*g)return!1;const h=C3.angleTo(b,c,e,f);if(C3.angleDiff(d,h)>this._cone/2)return!1;const a=this.CastRay(b,c,e,f,this._useCollisionCells);return!a.DidCollide()}_GetCollisionCandidates(b,c){if(c){const c=this.GetWorldInfo().GetLayer(),d=this._runtime.GetCollisionEngine();return 0===this._obstacleMode?d.GetSolidCollisionCandidates(c,b.rect,a):d.GetObjectClassesCollisionCandidates(c,this._GetObstacleTypes(),b.rect,a),a}if(0===this._obstacleMode){const b=this._runtime.GetSolidBehavior();return b?b.GetInstances():a}for(const d of this._GetObstacleTypes())C3.appendArray(a,d.GetInstances());return a}_GetObstacleTypes(){return this.GetSdkType().GetObstacleTypes()}CastRay(b,c,d,e,f){const g=this._ray.Set(b,c,d,e),h=this._GetCollisionCandidates(g,f),j=this._runtime.GetCollisionEngine(),k=0===this._obstacleMode,l=this._inst;for(let a=0,i=h.length;a<i;++a){const b=h[a];b===l||k&&!j.IsSolidCollisionAllowed(b,l)||j.TestRayIntersectsInstance(b,g)}return g.Complete(),C3.clearArray(a),g}GetPropertyValueByIndex(a){return a===0?this._obstacleMode:1===a?this._range:2===a?C3.toDegrees(this._cone):3===a?this._useCollisionCells:void 0}SetPropertyValueByIndex(a,b){a===0?this._obstacleMode=b:1===a?this._range=b:2===a?this._cone=C3.toRadians(b):3===a?this._useCollisionCells=!!b:void 0}GetDebuggerProperties(){return[{title:"$"+this.GetBehaviorType().GetName(),properties:[{name:"behaviors.los.properties.range.name",value:this._range,onedit:(a)=>this._range=a},{name:"behaviors.los.properties.cone-of-view.name",value:C3.toDegrees(this._cone),onedit:(a)=>this._cone=C3.toRadians(a)}]}]}}}
-
-"use strict";{const a=new Set,b=new Set;C3.Behaviors.LOS.Cnds={HasLOSToPosition(a,b){return this.HasLOSTo(a,b)},RayIntersected(){return this._ray.DidCollide()},HasLOSBetweenPositions(a,b,c,d,e){return this.HasLOSBetweenPositions(a,b,C3.toRadians(c),d,e)},HasLOSToObject(c){if(!c)return!1;const d=this._runtime.GetCurrentCondition(),e=d.GetObjectClass().GetCurrentSol(),f=c.GetCurrentSol(),g=e.GetInstances(),h=f.GetInstances();e.IsSelectAll()&&C3.clearArray(e._GetOwnElseInstances()),f.IsSelectAll()&&C3.clearArray(f._GetOwnElseInstances());const i=d.IsInverted(),j=this.GetSdkType();for(const d of g){let c=!1;const e=j.FindLOSBehavior(d);for(const a of h)d!==a&&C3.xor(e.HasLOSToInstance(a),i)&&(c=!0,b.add(a));c&&a.add(d)}return e.SetArrayPicked([...a]),f.SetArrayPicked([...b]),a.clear(),b.clear(),e.HasAnyInstances()}}}
-
-"use strict";C3.Behaviors.LOS.Acts={SetRange(a){this._range=a},SetCone(a){this._cone=C3.toRadians(a)},CastRay(a,b,c,d,e){this.CastRay(a,b,c,d,e)},AddObstacle(a){const b=this.GetSdkType().GetObstacleTypes();if(!b.includes(a)){for(const c of b)if(c.IsFamily()&&c.FamilyHasMember(a))return;b.push(a)}},ClearObstacles(){C3.clearArray(this.GetSdkType().GetObstacleTypes())}};
-
-"use strict";C3.Behaviors.LOS.Exps={Range(){return this._range},ConeOfView(){return C3.toDegrees(this._cone)},HitX(){const a=this._ray;return a.DidCollide()?a.hitX:0},HitY(){const a=this._ray;return a.DidCollide()?a.hitY:0},HitDistance(){const a=this._ray;return a.DidCollide()?a.distance:0},HitUID(){const a=this._ray;return a.DidCollide()?a.hitUid:-1},NormalX(a){const b=this._ray;return b.DidCollide()?b.hitX+a*b.normalX:0},NormalY(a){const b=this._ray;return b.DidCollide()?b.hitY+a*b.normalY:0},NormalAngle(){const a=this._ray;return a.DidCollide()?C3.toDegrees(a.hitNormal):0},ReflectionX(a){const b=this._ray;return b.DidCollide()?b.hitX+a*b.reflectionX:0},ReflectionY(a){const b=this._ray;return b.DidCollide()?b.hitY+a*b.reflectionY:0},ReflectionAngle(){const a=this._ray;return a.DidCollide()?C3.toDegrees(Math.atan2(a.reflectionY,a.reflectionX)):0}};
-
 "use strict"
 self.C3_GetObjectRefTable = function () {
 	return [
@@ -596,7 +598,7 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Mouse,
 		C3.Plugins.Tilemap,
 		C3.Plugins.Text,
-		C3.Behaviors.LOS,
+		C3.Plugins.NinePatch,
 		C3.Plugins.System.Cnds.EveryTick,
 		C3.Plugins.TiledBg.Acts.SetX,
 		C3.Plugins.TiledBg.Exps.X,
@@ -613,13 +615,16 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Sprite.Acts.Destroy,
 		C3.Plugins.Sprite.Acts.AddInstanceVar,
 		C3.Plugins.Text.Acts.SetText,
-		C3.Behaviors.LOS.Cnds.HasLOSToObject,
-		C3.Plugins.Sprite.Acts.MoveAtAngle,
-		C3.Plugins.Sprite.Exps.X,
-		C3.Plugins.Sprite.Exps.Y,
-		C3.Plugins.Sprite.Cnds.IsAnimPlaying,
 		C3.Plugins.Mouse.Cnds.OnObjectClicked,
-		C3.Plugins.System.Acts.GoToLayout
+		C3.Plugins.System.Acts.GoToLayout,
+		C3.Plugins.Sprite.Cnds.CompareInstanceVar,
+		C3.Behaviors.Platform.Acts.SimulateControl,
+		C3.Plugins.Sprite.Acts.SetInstanceVar,
+		C3.Plugins.System.Cnds.Else,
+		C3.Plugins.System.Cnds.OnLayoutStart,
+		C3.Plugins.TiledBg.Acts.SetWidth,
+		C3.Plugins.Sprite.Acts.SubInstanceVar,
+		C3.Plugins.Sprite.Cnds.OnDestroyed
 	];
 };
 self.C3_JsPropNameTable = [
@@ -627,6 +632,8 @@ self.C3_JsPropNameTable = [
 	{coinBronze: 0},
 	{coinSilver: 0},
 	{coinGold: 0},
+	{max_health: 0},
+	{current_health: 0},
 	{Solid: 0},
 	{Platform: 0},
 	{character: 0},
@@ -636,16 +643,14 @@ self.C3_JsPropNameTable = [
 	{coinBronze_score: 0},
 	{coinSilver_score: 0},
 	{coinGold_score: 0},
-	{LineOfSight: 0},
-	{enemy: 0},
 	{BARRIERS: 0},
 	{CoolTextNASANIGE: 0},
 	{STARTBUTTON: 0},
 	{Text: 0},
-	{TiledBackground: 0},
-	{TiledBackground2: 0},
+	{LEVEL2BACKGROUND: 0},
+	{INSTRUCTIONSPAGEBACKGROUND: 0},
 	{CoolTextInstructions: 0},
-	{TiledBackground3: 0},
+	{HOMEPAGEBACKGROUND: 0},
 	{INSTRUCTIONSBUTTON: 0},
 	{Text2: 0},
 	{ARROWKEYS: 0},
@@ -655,7 +660,7 @@ self.C3_JsPropNameTable = [
 	{LEFTARROWTEXT: 0},
 	{RIGHTARROWTEXT: 0},
 	{DOWNARROWTEXT: 0},
-	{TiledBackground4: 0},
+	{LEVELSELECT: 0},
 	{HOMEBUTTONPART1: 0},
 	{HOMEBUTTON: 0},
 	{INSTRUCTIONSHOMEBUTTON: 0},
@@ -681,6 +686,47 @@ self.C3_JsPropNameTable = [
 	{NINJANIGE: 0},
 	{SPIKES: 0},
 	{Sprite: 0},
+	{DOORTOLEVEL2: 0},
+	{DOORTOLEVEL2PART2: 0},
+	{patrol: 0},
+	{hitpoints: 0},
+	{ENEMY2: 0},
+	{SLIMEFENCE: 0},
+	{max_width: 0},
+	{HEALTHBAR: 0},
+	{TiledBackground5: 0},
+	{"9patch": 0},
+	{Sprite2: 0},
+	{GAMEOVERBACKGROUND: 0},
+	{Sprite3: 0},
+	{gameOver: 0},
+	{tryAgainButton: 0},
+	{DEATHBARRIER: 0},
+	{JAILCELL1: 0},
+	{JAILCELL2: 0},
+	{JAILCELL3: 0},
+	{BRONZECOIN: 0},
+	{SILVERCOIN: 0},
+	{GOLDCOIN: 0},
+	{isaac: 0},
+	{jamie: 0},
+	{reece: 0},
+	{BRCGaming: 0},
+	{TiledBackground: 0},
+	{BRCGaming2: 0},
+	{jamie2: 0},
+	{reece2: 0},
+	{isaac2: 0},
+	{creatorsText: 0},
+	{names: 0},
+	{NinjaNige2: 0},
+	{PLAYBUTTON: 0},
+	{TiledBackground2: 0},
+	{CREATORMENTIONSJAMIE: 0},
+	{Sprite4: 0},
+	{CREATORMENTIONS: 0},
+	{CREATORMENTIONSREECE: 0},
+	{CREATORMENTIONSISAAC: 0},
 	{background_speed: 0},
 	{bg2_speed: 0}
 ];
@@ -800,15 +846,20 @@ self.C3_JsPropNameTable = [
 			const n0 = p._GetNode(0);
 			return () => and("= ", n0.ExpInstVar());
 		},
+		() => 0,
+		p => {
+			const n0 = p._GetNode(0);
+			return () => n0.ExpInstVar();
+		},
 		p => {
 			const n0 = p._GetNode(0);
 			const n1 = p._GetNode(1);
 			const n2 = p._GetNode(2);
-			const n3 = p._GetNode(3);
-			return () => C3.toDegrees(C3.angleTo(n0.ExpObject(), n1.ExpObject(), n2.ExpObject(), n3.ExpObject()));
+			return () => ((n0.ExpInstVar() / n1.ExpInstVar()) * n2.ExpInstVar());
 		},
-		() => "enemy flying",
-		() => "dead"
+		() => 10,
+		() => "dead",
+		() => 20
 	];
 }
 
